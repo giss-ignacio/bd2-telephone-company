@@ -163,20 +163,23 @@ GO
 -- ACTIVIDADES
 INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (201, N'Inicio de tramite de pedido de servicio' , CAST(N'2021-11-01 10:12:00.000' AS Datetime), 200)
 GO
-INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (201, N'Envio de documentacion a departamento de gestion de clientes' , CAST(N'2021-11-01 10:35:00.000' AS Datetime), 200)
+INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (202, N'Envio de documentacion a departamento de gestion de clientes' , CAST(N'2021-11-01 10:35:00.000' AS Datetime), 200)
 GO
-INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (201, N'Recibida aprobacion para realizar el alta de cliente' , CAST(N'2021-11-01 10:45:00.000' AS Datetime), 200)
+INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (203, N'Recibida aprobacion para realizar el alta de cliente' , CAST(N'2021-11-01 10:45:00.000' AS Datetime), 200)
 GO
-INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (201, N'Envio de solicitud de instalacion a soporte tecnico' , CAST(N'2021-11-01 10:55:00.000' AS Datetime), 200)
+INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (204, N'Envio de solicitud de instalacion a soporte tecnico' , CAST(N'2021-11-01 10:55:00.000' AS Datetime), 200)
 GO
-INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (201, N'Esperando confirmacion del cliente para instalacion' , CAST(N'2021-11-01 11:32:00.000' AS Datetime), 200)
+INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (205, N'Esperando confirmacion del cliente para instalacion' , CAST(N'2021-11-01 11:32:00.000' AS Datetime), 200)
 GO
-INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (201, N'El cliente confirma datos y fecha de instalacion' , CAST(N'2021-11-01 16:00:00.000' AS Datetime), 200)
+INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (206, N'El cliente confirma datos y fecha de instalacion' , CAST(N'2021-11-01 16:00:00.000' AS Datetime), 200)
 GO
-INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (201, N'Se envia confirmacion para instalacion a soporte tecnico' , CAST(N'2021-11-02 10:00:00.000' AS Datetime), 200)
+INSERT [dbo].[ACTIVIDADES] ([ID_ACTIVIDAD], [DESCRIPCION], [FECHA], [NRO_TICKET]) VALUES (207, N'Se envia confirmacion para instalacion a soporte tecnico' , CAST(N'2021-11-02 10:00:00.000' AS Datetime), 200)
 GO
 -- TODO agregar otras actividades
 
-
-
-
+-- MAIL
+INSERT [dbo].[MAIL] ([ID_MAIL], [ORIGEN], [ASUNTO], [FUE_ENVIADO], [NRO_TICKET], [FECHA], [DESTINATARIO]) VALUES (200, N'soporte@telefonia.com.ar', N'Solicitud de instalacion de servicio', 1, 200, CAST(N'2021-11-02 11:00:00.000' AS Datetime), 39122353)
+GO
+INSERT [dbo].[MAIL] ([ID_MAIL], [ORIGEN], [ASUNTO], [FUE_ENVIADO], [NRO_TICKET], [FECHA], [DESTINATARIO]) VALUES (200, N'baja@telefonia.com.ar', N'Solicitud de baja de servicio', 1, 200, CAST(N'2010-11-11 13:14:00.000' AS Datetime), 23103456)
+GO
+-- TODO otros mails
