@@ -189,10 +189,10 @@ GO
 -- MAIL
 DECLARE @ticket_id int
 SELECT @ticket_id=[dbo].[NRO_TICKET] FROM TICKET WHERE NRO_DOC_CLI=39122353 AND TIPO_DOC_CLI=N'DNI' AND NRO_SERVICIO IS NULL;
-INSERT [dbo].[MAIL] ([ID_MAIL], [ORIGEN], [ASUNTO], [FUE_ENVIADO], [NRO_TICKET], [FECHA], [DESTINATARIO_NRO_DOC], [DESTINATARIO_TIPO_DOC]) VALUES (200, N'soporte@telefonia.com.ar', N'Solicitud de instalacion de servicio', 1, @ticket_id, CAST(N'2021-11-02 11:00:00.000' AS Datetime), 39122353, N'DNI')
+INSERT [dbo].[MAIL] ([ORIGEN], [ASUNTO], [FUE_ENVIADO], [NRO_TICKET], [FECHA], [DESTINATARIO_NRO_DOC], [DESTINATARIO_TIPO_DOC]) VALUES (N'soporte@telefonia.com.ar', N'Solicitud de instalacion de servicio', 1, @ticket_id, CAST(N'2021-11-02 11:00:00.000' AS Datetime), 39122353, N'DNI')
 GO
 DECLARE @ticket_id int
 SELECT @ticket_id=[dbo].[NRO_TICKET] FROM TICKET WHERE NRO_DOC_CLI=23103456 AND TIPO_DOC_CLI=N'DNI' AND COD_TIPOLOGIA=3;
-INSERT [dbo].[MAIL] ([ID_MAIL], [ORIGEN], [ASUNTO], [FUE_ENVIADO], [NRO_TICKET], [FECHA], [DESTINATARIO_NRO_DOC], [DESTINATARIO_TIPO_DOC]) VALUES (200, N'baja@telefonia.com.ar', N'Solicitud de baja de servicio', 1, @ticket_id, CAST(N'2010-11-11 13:14:00.000' AS Datetime), 23103456, N'DNI')
+INSERT [dbo].[MAIL] ([ORIGEN], [ASUNTO], [FUE_ENVIADO], [NRO_TICKET], [FECHA], [DESTINATARIO_NRO_DOC], [DESTINATARIO_TIPO_DOC]) VALUES ( N'baja@telefonia.com.ar', N'Solicitud de baja de servicio', 1, @ticket_id, CAST(N'2010-11-11 13:14:00.000' AS Datetime), 23103456, N'DNI')
 GO
 -- TODO otros mails
