@@ -175,8 +175,8 @@ GO
 -- TODO agregar otras actividades
 
 -- MAIL
-INSERT [dbo].[MAIL] ([ID_MAIL], [ORIGEN], [ASUNTO], [FUE_ENVIADO], [NRO_TICKET], [FECHA], [DESTINATARIO]) VALUES (200, N'soporte@telefonia.com.ar', N'Solicitud de instalacion de servicio', 1, 200, CAST(N'2021-11-02 11:00:00.000' AS Datetime), 39122353)
+INSERT [dbo].[MAIL] ([ID_MAIL], [ORIGEN], [ASUNTO], [FUE_ENVIADO], [NRO_TICKET], [FECHA], [DESTINATARIO_NRO_DOC], [DESTINATARIO_TIPO_DOC]) VALUES (200, N'soporte@telefonia.com.ar', N'Solicitud de instalacion de servicio', 1, 200, CAST(N'2021-11-02 11:00:00.000' AS Datetime), 39122353)
 GO
-INSERT [dbo].[MAIL] ([ID_MAIL], [ORIGEN], [ASUNTO], [FUE_ENVIADO], [NRO_TICKET], [FECHA], [DESTINATARIO]) VALUES (200, N'baja@telefonia.com.ar', N'Solicitud de baja de servicio', 1, 200, CAST(N'2010-11-11 13:14:00.000' AS Datetime), 23103456)
+INSERT [dbo].[MAIL] ([ID_MAIL], [ORIGEN], [ASUNTO], [FUE_ENVIADO], [NRO_TICKET], [FECHA], [DESTINATARIO_NRO_DOC], [DESTINATARIO_TIPO_DOC]) VALUES (200, N'baja@telefonia.com.ar', N'Solicitud de baja de servicio', 1, 200, CAST(N'2010-11-11 13:14:00.000' AS Datetime), 23103456)
 GO
 -- TODO otros mails
