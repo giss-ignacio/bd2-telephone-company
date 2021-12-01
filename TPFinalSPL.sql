@@ -43,3 +43,19 @@ AS
 
 	deallocate db_cursor;
 
+-- Funcion para tener el mensaje de cumplimiento de SLA
+	CREATE FUNCTION mensajeCumplimientoSLA(@cumpleSLA BIT)	
+	RETURNS VARCHAR(255)
+	AS
+	BEGIN
+	DECLARE @mensaje VARCHAR(255)
+	iF @cumpleSLA=1
+	BEGIN
+		SET @mensaje=N'Se cumple SLA'
+	END
+	ELSE
+	BEGIN 
+		SET @mensaje=N'No se cumple SLA'
+	END
+	RETURN @mensaje
+	END

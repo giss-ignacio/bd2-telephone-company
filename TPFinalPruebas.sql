@@ -2,12 +2,7 @@
 -- Stored Procedure CumpleSLA
 DECLARE @tmp int
 EXEC CumpleSLA 3, @tmp OUTPUT;
-iF @tmp=1
-BEGIN
-	PRINT 'Se cumple SLA'
-END
-ELSE
-BEGIN 
-	PRINT 'No se cumple SLA'
-END
+DECLARE @mensaje VARCHAR(255)
+EXEC @mensaje=mensajeCumplimientoSLA @cumpleSLA=@tmp
+PRINT @mensaje
 GO
