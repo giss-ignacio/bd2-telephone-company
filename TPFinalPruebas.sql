@@ -6,3 +6,10 @@ DECLARE @mensaje VARCHAR(255)
 EXEC @mensaje=mensajeCumplimientoSLA @cumpleSLA=@tmp
 PRINT @mensaje
 GO
+
+-- Transaccion de prueba
+BEGIN TRANSACTION
+  UPDATE TICKET SET COD_ESTADO=3 where NRO_TICKET=2;
+  UPDATE MAIL SET FUE_ENVIADO=1 where NRO_TICKET=2;
+COMMIT;
+
