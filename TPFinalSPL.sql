@@ -1,3 +1,43 @@
+CREATE PROCEDURE CrearServicio 
+	@telefono char(20),
+	@id_direccion int,
+	@cod_estado_serv int,
+	@nro_doc_cli int,
+	@tipo_doc_cli char(3),
+	@nombre_tipo_serv char(30)
+        AS
+	DECLARE @id_tipo_serv int
+	DECLARE @cliente_existente bit
+	DECLARE db_cursor CURSOR FOR
+
+	SELECT ID_TIPO_SERVICIO FROM TIPO_SERVICIO WHERE NOMBRE=@nombre_tipo_serv
+	open db_cursor
+	FETCH NEXT FROM db_cursor into @id_tipo_serv
+	IF @id_tipo_serv is null
+	BEGIN
+		PRINT 'El tipo de servicio es inexistente para el nombre ' + @nombre_tipo_serv
+	END
+	ELSE
+	BEGIN
+		EXEC @cliente_existente=validarClienteExistente @nro_doc_cli=@nro_doc_cli, @tipo_doc_cli=@tipo_doc_cli
+
+		IF @cliente_existente=0
+		BEGIN
+			PRINT 'El cliente con numero de documento ' + CAST(@nro_doc_cli AS VARCHAR) + ' tipo ' + @tipo_doc_cli + ' no existe'
+		END
+		ELSE
+		BEGIN
+			BEGIN TRANSACTION
+			INSERT [dbo].[SERVICIOS] ([ID_DIRECCION], [TELEFONO], [FECHA_INICIO], [COD_ESTADO_SERV], [NRO_DOC_CLI], [TIPO_DOC_CLI], [ID_TIPO_SERVICIO]) 
+			VALUES (@id_direccion, @telefono, GETDATE(), @cod_estado_serv, @nro_doc_cli, @tipo_doc_cli,  @id_tipo_serv)
+			COMMIT
+		END
+	END
+
+	close db_cursor
+
+	deallocate db_cursor
+
 -- DROP PROCEDURE CumpleSLA
 CREATE PROCEDURE CumpleSLA @ticket_id int, @seCumpleSLA BIT OUTPUT
 AS
@@ -59,3 +99,13 @@ AS
 	END
 	RETURN @mensaje
 	END
+
+	CREATE FUNCTION validarClienteExistente(@nro_doc_cli INT, @tipo_doc_cli CHAR(3))	
+	RETURNS BIT
+	AS
+	BEGIN
+	    IF EXISTS (SELECT 1 FROM CLIENTES WHERE NRO_DOC=@nro_doc_cli AND TIPO_DOC=@tipo_doc_cli)
+		RETURN 1
+	RETURN 0
+	END
+
