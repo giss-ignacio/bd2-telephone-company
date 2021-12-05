@@ -9,19 +9,16 @@ CREATE PROCEDURE CrearTicket
 	DECLARE @id_tipo_serv int
 	DECLARE @cliente_existente bit
 	DECLARE @servicio_existente bit
+	DECLARE @tipologia_valida bit
 	DECLARE db_cursor CURSOR FOR
 
-	SELECT ID_TIPO_SERVICIO FROM TIPO_SERVICIO WHERE NOMBRE=@nombre_tipo_serv
+	SELECT ID_TIPO_SERVICIO FROM SERVICIOS WHERE NRO_SERVICIO=@nro_servicio
 	open db_cursor
 	FETCH NEXT FROM db_cursor into @id_tipo_serv
-	IF @id_tipo_serv is null
-	BEGIN
-		PRINT 'El tipo de servicio es inexistente para el nombre ' + @nombre_tipo_serv
-	END
-	ELSE
 	BEGIN
 		EXEC @cliente_existente=validarClienteExistente @nro_doc_cli=@nro_doc_cli, @tipo_doc_cli=@tipo_doc_cli
 		EXEC @servicio_existente=validarServicioExistente @nro_servicio=@nro_servicio
+		EXEC @tipologia_valida=validarTipologiaHabilitadaParaServicio @cod_tipologia=@cod_tipologia, @id_tipo_servicio=@id_tipo_servicio
 
 		IF @cliente_existente=0
 		BEGIN
@@ -31,8 +28,13 @@ CREATE PROCEDURE CrearTicket
 		BEGIN
 			PRINT 'El servicio numero ' + CAST(@nro_servicio AS VARCHAR) + ' no existe'
 		END
+		ELSE IF @tipologia_valida=0
+		BEGIN
+			PRINT 'La tipologia no es valida para el serivicio indicado'
+		END
 		ELSE
 		BEGIN
+
 			BEGIN TRANSACTION
 			INSERT [dbo].[TICKET] ([FECHA_APERTURA], [NRO_DOC_CLI], [TIPO_DOC_CLI], [NRO_SERVICIO], [COD_TIPOLOGIA], [COD_ESTADO]) 
 			VALUES (GETDATE(), @nro_doc_cli, @tipo_doc_cli,  @nro_servicio, @cod_tipologia, @cod_estado)
@@ -160,6 +162,15 @@ AS
 	AS
 	BEGIN
 	    IF EXISTS (SELECT 1 FROM SERVICIOS WHERE NRO_SERVICIO=@nro_servicio)
+		RETURN 1
+	RETURN 0
+	END
+
+	CREATE FUNCTION validarTipologiaHabilitadaParaServicio(@cod_tipologia INT, @id_tipo_servicio INT)	
+	RETURNS BIT
+	AS
+	BEGIN
+	    IF EXISTS (SELECT 1 FROM TIPOLOGIA_SERVICIO WHERE ID_TIPO_SERVICIO=@id_tipo_servicio AND COD_TIPOLOGIA=@cod_tipologia)
 		RETURN 1
 	RETURN 0
 	END
