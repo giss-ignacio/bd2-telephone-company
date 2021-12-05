@@ -100,13 +100,72 @@ CREATE PROCEDURE CrearServicio
 				INSERT [dbo].[SERVICIOS] ([ID_DIRECCION], [TELEFONO], [FECHA_INICIO], [COD_ESTADO_SERV], [NRO_DOC_CLI], [TIPO_DOC_CLI], [ID_TIPO_SERVICIO]) 
 					VALUES (@id_direccion, @telefono, GETDATE(), @cod_estado_serv, @nro_doc_cli, @tipo_doc_cli,  @id_tipo_serv)
 				IF @cod_estado_serv=1
-					UPDATE CLIENTES SET COD_ESTADO_CLI=1
+					UPDATE CLIENTES SET COD_ESTADO_CLI=1 WHERE NRO_DOC=@nro_doc_cli AND TIPO_DOC=@tipo_doc_cli
 			COMMIT TRANSACTION
 			END TRY
 			BEGIN CATCH
 				IF (@@TRANCOUNT > 0)
 					ROLLBACK TRANSACTION
 				PRINT 'No se pudo crear el servicio'
+				THROW
+			END CATCH
+		END
+	END
+
+	close db_cursor
+
+	deallocate db_cursor
+
+CREATE PROCEDURE ModificarServicio 
+	@nro_servicio int,
+	@telefono char(20),
+	@id_direccion int,
+	@cod_estado_serv int,
+	@nro_doc_cli int,
+	@tipo_doc_cli char(3),
+	@nombre_tipo_serv char(30)
+        AS
+	DECLARE @id_tipo_serv int
+	DECLARE @cliente_existente bit
+	DECLARE db_cursor CURSOR FOR
+
+	SELECT ID_TIPO_SERVICIO FROM TIPO_SERVICIO WHERE NOMBRE=@nombre_tipo_serv
+	open db_cursor
+	FETCH NEXT FROM db_cursor into @id_tipo_serv
+	IF @id_tipo_serv is null
+	BEGIN
+		PRINT 'El tipo de servicio es inexistente para el nombre ' + @nombre_tipo_serv
+	END
+	ELSE
+	BEGIN
+		EXEC @cliente_existente=validarClienteExistente @nro_doc_cli=@nro_doc_cli, @tipo_doc_cli=@tipo_doc_cli
+		EXEC @servicio_existente=validarServicioExistente @nro_servicio=@nro_servicio
+
+		IF @servicio_existente=0
+		BEGIN
+			PRINT 'El servicio numero ' + CAST(@nro_servicio AS VARCHAR) + ' no existe'
+			RETURN
+		END
+		IF @cliente_existente=0
+		BEGIN
+			PRINT 'El cliente con numero de documento ' + CAST(@nro_doc_cli AS VARCHAR) + ' tipo ' + @tipo_doc_cli + ' no existe'
+		END
+		ELSE
+		BEGIN
+			BEGIN TRY
+			BEGIN TRANSACTION
+				UPDATE [dbo].[SERVICIOS] 
+				SET ID_DIRECCION=COALESCE(@id_direccion, ID_DIRECCION), TELEFONO=COALESCE(@telefono, TELEFONO), COD_ESTADO_SERV=COALESCE(@cod_estado_serv, COD_ESTADO_SERV), 
+					NRO_DOC_CLI=COALESCE(@nro_doc_cli, NRO_DOC_CLI), TIPO_DOC_CLI=COALESCE(@tipo_doc_cli, TIPO_DOC_CLI), ID_TIPO_SERVICIO=COALESCE(@id_tipo_servicio, ID_TIPO_SERVICIO) 
+				WHERE [NRO_SERVICIO]=@nro_servicio
+				IF @cod_estado_serv=1
+					UPDATE CLIENTES SET COD_ESTADO_CLI=1 WHERE NRO_DOC=@nro_doc_cli AND TIPO_DOC=@tipo_doc_cli
+			COMMIT TRANSACTION
+			END TRY
+			BEGIN CATCH
+				IF (@@TRANCOUNT > 0)
+					ROLLBACK TRANSACTION
+				PRINT 'No se pudo modificar el servicio'
 				THROW
 			END CATCH
 		END
