@@ -24,6 +24,15 @@ CREATE PROCEDURE CrearTicket
 		BEGIN
 			PRINT 'El cliente con numero de documento ' + CAST(@nro_doc_cli AS VARCHAR) + ' tipo ' + @tipo_doc_cli + ' no existe'
 		END
+		ELSE IF @nro_servicio is null
+		BEGIN
+			EXEC @tipologia_valida=validarTipologiaHabilitadaNoAsociadaAServicio @cod_tipologia=@cod_tipologia
+			IF @tipologia_valida=0
+			BEGIN
+				PRINT 'La tipologia no es valida'
+				RETURN
+			END
+		END
 		ELSE IF @servicio_existente=0
 		BEGIN
 			PRINT 'El servicio numero ' + CAST(@nro_servicio AS VARCHAR) + ' no existe'
@@ -171,6 +180,16 @@ AS
 	AS
 	BEGIN
 	    IF EXISTS (SELECT 1 FROM TIPOLOGIA_SERVICIO WHERE ID_TIPO_SERVICIO=@id_tipo_servicio AND COD_TIPOLOGIA=@cod_tipologia)
+		RETURN 1
+	RETURN 0
+	END
+
+	CREATE FUNCTION validarTipologiaHabilitadaNoAsociadaAServicio(@cod_tipologia INT)	
+	RETURNS BIT
+	AS
+	BEGIN
+	    IF EXISTS (SELECT 1 FROM TIPOLOGIA T LEFT JOIN TIPOLOGIA_SERVICIO TS ON T.COD_TIPOLOGIA=TS.COD_TIPOLOGIA
+		WHERE TS.ID_TIPO_SERVICIO IS NULL AND T.COD_TIPOLOGIA=@cod_tipologia)
 		RETURN 1
 	RETURN 0
 	END
