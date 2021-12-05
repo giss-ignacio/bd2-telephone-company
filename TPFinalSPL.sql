@@ -43,11 +43,20 @@ CREATE PROCEDURE CrearTicket
 		END
 		ELSE
 		BEGIN
-
-			BEGIN TRANSACTION
-			INSERT [dbo].[TICKET] ([FECHA_APERTURA], [NRO_DOC_CLI], [TIPO_DOC_CLI], [NRO_SERVICIO], [COD_TIPOLOGIA], [COD_ESTADO]) 
-			VALUES (GETDATE(), @nro_doc_cli, @tipo_doc_cli,  @nro_servicio, @cod_tipologia, @cod_estado)
-			COMMIT
+			BEGIN TRY	
+				BEGIN TRANSACTION
+				INSERT [dbo].[TICKET] ([FECHA_APERTURA], [NRO_DOC_CLI], [TIPO_DOC_CLI], [NRO_SERVICIO], [COD_TIPOLOGIA], [COD_ESTADO]) 
+					VALUES (GETDATE(), @nro_doc_cli, @tipo_doc_cli,  @nro_servicio, @cod_tipologia, @cod_estado)
+				INSERT [dbo].[HISTORIAL] ([FECHA_INICIO], [NRO_TICKET], [COD_ESTADO])
+					VALUES (GETDATE(), @@IDENTITY, @cod_estado)
+				COMMIT TRANSACTION
+			END TRY
+			BEGIN CATCH
+				IF (@@TRANCOUNT > 0)
+					ROLLBACK TRANSACTION
+				PRINT 'No se pudo crear el ticket'
+				THROW
+			END CATCH
 		END
 	END
 
@@ -184,6 +193,7 @@ AS
 	RETURN 0
 	END
 
+-- En el caso de no tener servicio asociado, debe permitir asociar una tipología que no esté asociada a ningún tipo de servicio
 	CREATE FUNCTION validarTipologiaHabilitadaNoAsociadaAServicio(@cod_tipologia INT)	
 	RETURNS BIT
 	AS
