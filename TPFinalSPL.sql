@@ -66,6 +66,64 @@ CREATE PROCEDURE CrearTicket
 
 	deallocate db_cursor
 
+CREATE PROCEDURE ModificarTicket 
+	@nro_ticket int,
+        @cod_tipologia int not null,
+        @cod_estado int not null,
+        AS
+	DECLARE @id_tipo_serv int
+	DECLARE @ticket_existente bit
+	DECLARE @tipologia_valida bit
+	DECLARE db_cursor CURSOR FOR
+
+	SELECT ID_TIPO_SERVICIO FROM SERVICIOS WHERE NRO_SERVICIO=@nro_servicio
+	open db_cursor
+	FETCH NEXT FROM db_cursor into @id_tipo_serv
+	BEGIN
+		EXEC @ticket_existente=validarTicketExistente @nro_ticket=@nro_ticket
+		EXEC @tipologia_valida=validarTipologiaHabilitadaParaServicio @cod_tipologia=@cod_tipologia, @id_tipo_servicio=@id_tipo_servicio
+
+		IF @ticket_existente=0
+		BEGIN
+			PRINT 'El ticket con numero ' + CAST(@nro_ticket AS VARCHAR) + ' no existe'
+			RETURN
+		END
+		ELSE IF @nro_servicio is null
+		BEGIN
+			EXEC @tipologia_valida=validarTipologiaHabilitadaNoAsociadaAServicio @cod_tipologia=@cod_tipologia
+			IF @tipologia_valida=0
+			BEGIN
+				PRINT 'La tipologia no es valida'
+				RETURN
+			END
+		END
+		ELSE IF @tipologia_valida=0
+		BEGIN
+			PRINT 'La tipologia no es valida para el serivicio indicado'
+		END
+		ELSE
+		BEGIN
+			BEGIN TRY	
+				BEGIN TRANSACTION
+				UPDATE [dbo].[TICKET] SET  COD_TIPOLOGIA=COALESCE(@cod_tipologia, COD_TIPOLOGIA), COD_ESTADO=COALESCE(@cod_estado, COD_ESTADO) 
+					WHERE NRO_TICKET=@nro_ticket
+				INSERT [dbo].[HISTORIAL] ([FECHA_INICIO], [NRO_TICKET], [COD_ESTADO])
+					VALUES (GETDATE(), @nro_ticket, @cod_estado)
+				COMMIT TRANSACTION
+			END TRY
+			BEGIN CATCH
+				IF (@@TRANCOUNT > 0)
+					ROLLBACK TRANSACTION
+				PRINT 'No se pudo modificar el ticket'
+				THROW
+			END CATCH
+		END
+	END
+
+	close db_cursor
+
+	deallocate db_cursor
+
 CREATE PROCEDURE CrearServicio 
 	@telefono char(20),
 	@id_direccion int,
@@ -146,7 +204,7 @@ CREATE PROCEDURE ModificarServicio
 			PRINT 'El servicio numero ' + CAST(@nro_servicio AS VARCHAR) + ' no existe'
 			RETURN
 		END
-		IF @cliente_existente=0
+		IF @cliente_existente=0 AND @nro_doc_cli is not null AND @tipo_doc_cli is not null
 		BEGIN
 			PRINT 'El cliente con numero de documento ' + CAST(@nro_doc_cli AS VARCHAR) + ' tipo ' + @tipo_doc_cli + ' no existe'
 		END
@@ -251,6 +309,15 @@ AS
 	AS
 	BEGIN
 	    IF EXISTS (SELECT 1 FROM SERVICIOS WHERE NRO_SERVICIO=@nro_servicio)
+		RETURN 1
+	RETURN 0
+	END
+
+	CREATE FUNCTION validarTicketExistente(@nro_ticket INT)	
+	RETURNS BIT
+	AS
+	BEGIN
+	    IF EXISTS (SELECT 1 FROM TICKET WHERE NRO_TICKET=@nro_ticket)
 		RETURN 1
 	RETURN 0
 	END
