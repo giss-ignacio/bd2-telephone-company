@@ -23,6 +23,7 @@ CREATE PROCEDURE CrearTicket
 		IF @cliente_existente=0
 		BEGIN
 			PRINT 'El cliente con numero de documento ' + CAST(@nro_doc_cli AS VARCHAR) + ' tipo ' + @tipo_doc_cli + ' no existe'
+			RETURN
 		END
 		ELSE IF @nro_servicio is null
 		BEGIN
@@ -33,9 +34,10 @@ CREATE PROCEDURE CrearTicket
 				RETURN
 			END
 		END
-		ELSE IF @servicio_existente=0
+		IF @servicio_existente=0
 		BEGIN
 			PRINT 'El servicio numero ' + CAST(@nro_servicio AS VARCHAR) + ' no existe'
+			RETURN
 		END
 		ELSE IF @tipologia_valida=0
 		BEGIN
@@ -93,10 +95,20 @@ CREATE PROCEDURE CrearServicio
 		END
 		ELSE
 		BEGIN
+			BEGIN TRY
 			BEGIN TRANSACTION
-			INSERT [dbo].[SERVICIOS] ([ID_DIRECCION], [TELEFONO], [FECHA_INICIO], [COD_ESTADO_SERV], [NRO_DOC_CLI], [TIPO_DOC_CLI], [ID_TIPO_SERVICIO]) 
-			VALUES (@id_direccion, @telefono, GETDATE(), @cod_estado_serv, @nro_doc_cli, @tipo_doc_cli,  @id_tipo_serv)
-			COMMIT
+				INSERT [dbo].[SERVICIOS] ([ID_DIRECCION], [TELEFONO], [FECHA_INICIO], [COD_ESTADO_SERV], [NRO_DOC_CLI], [TIPO_DOC_CLI], [ID_TIPO_SERVICIO]) 
+					VALUES (@id_direccion, @telefono, GETDATE(), @cod_estado_serv, @nro_doc_cli, @tipo_doc_cli,  @id_tipo_serv)
+				IF @cod_estado_serv=1
+					UPDATE CLIENTES SET COD_ESTADO_CLI=1
+			COMMIT TRANSACTION
+			END TRY
+			BEGIN CATCH
+				IF (@@TRANCOUNT > 0)
+					ROLLBACK TRANSACTION
+				PRINT 'No se pudo crear el servicio'
+				THROW
+			END CATCH
 		END
 	END
 
@@ -203,3 +215,14 @@ AS
 		RETURN 1
 	RETURN 0
 	END
+
+-- Validar que una persona tenga mas de 18 años
+	CREATE FUNCTION tieneMasDe18(@fecha_nac DATE)
+	RETURNS BIT
+	AS
+	BEGIN
+	DECLARE @edad int
+	SET @edad = DATEDIFF(yy, @fecha_nac, GETDATE()) - CASE WHEN (MONTH(@fecha_nac) > MONTH(GETDATE())) OR (MONTH(@fecha_nac) = MONTH(GETDATE()) AND DAY(@fecha_nac) > DAY(GETDATE())) THEN 1 ELSE 0 END
+		IF (@edad < 18) 
+			RETURN 0
+		RETURN 1
