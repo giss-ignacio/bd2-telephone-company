@@ -344,14 +344,14 @@ AS
 	RETURN 0
 	END
 
--- Validar que una persona tenga mas de 18 años
+-- Validar que una persona tenga 18 o mas años
 	CREATE FUNCTION tieneMasDe18(@fecha_nac DATE)
 	RETURNS BIT
 	AS
 	BEGIN
 		DECLARE @edad int
 		SET @edad = DATEDIFF(yy, @fecha_nac, GETDATE()) - CASE WHEN (MONTH(@fecha_nac) > MONTH(GETDATE())) OR (MONTH(@fecha_nac) = MONTH(GETDATE()) AND DAY(@fecha_nac) > DAY(GETDATE())) THEN 1 ELSE 0 END
-		IF (@edad > 18) 
+		IF (@edad >= 18) 
 			RETURN 1
 		RETURN 0
 	END

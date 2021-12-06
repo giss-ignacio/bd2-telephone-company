@@ -29,4 +29,17 @@ EXEC CrearServicio N'1234-1235', 1, 1, 11111111, N'DNI', N'Telefonia'
 -- Resultado OK
 EXEC CrearServicio N'1234-1235', 1, 1, 28101544, N'DNI', N'Telefonia'
 
-
+-- Funcion tiene mas de 18
+DECLARE @fecha_nac_cli DATE
+SELECT @fecha_nac_cli=FECHA_NAC from CLIENTES where NRO_DOC=28101544 AND TIPO_DOC=N'DNI'
+DECLARE @masDe18 BIT
+EXEC @masDe18=tieneMasDe18 @fecha_nac=@fecha_nac_cli
+PRINT @masDe18
+GO
+-- caso no tiene mas de 18
+DECLARE @fecha_nac_cli DATE
+SET @fecha_nac_cli=CAST(N'2003-12-31' AS Date)
+DECLARE @masDe18 BIT
+EXEC @masDe18=tieneMasDe18 @fecha_nac=@fecha_nac_cli
+PRINT @masDe18
+GO
