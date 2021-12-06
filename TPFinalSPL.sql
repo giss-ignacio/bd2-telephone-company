@@ -72,13 +72,14 @@ CREATE PROCEDURE ModificarTicket
         @cod_estado int
         AS
 	DECLARE @id_tipo_serv int
+	DECLARE @nro_servicio int
 	DECLARE @ticket_existente bit
 	DECLARE @tipologia_valida bit
 	DECLARE db_cursor CURSOR FOR
 
-	SELECT S.ID_TIPO_SERVICIO FROM SERVICIOS S INNER JOIN TICKET T ON S.NRO_SERVICIO=T.NRO_SERVICIO WHERE NRO_TICKET=@nro_ticket
+	SELECT S.ID_TIPO_SERVICIO, S.NRO_SERVICIO FROM SERVICIOS S RIGHT JOIN TICKET T ON S.NRO_SERVICIO=T.NRO_SERVICIO WHERE NRO_TICKET=@nro_ticket
 	open db_cursor
-	FETCH NEXT FROM db_cursor into @id_tipo_serv
+	FETCH NEXT FROM db_cursor into @id_tipo_serv, @nro_servicio
 	BEGIN
 		EXEC @ticket_existente=validarTicketExistente @nro_ticket=@nro_ticket
 		EXEC @tipologia_valida=validarTipologiaHabilitadaParaServicio @cod_tipologia=@cod_tipologia, @id_tipo_servicio=@id_tipo_serv
