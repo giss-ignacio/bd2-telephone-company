@@ -186,6 +186,7 @@ CREATE PROCEDURE ModificarServicio
         AS
 	DECLARE @id_tipo_serv int
 	DECLARE @cliente_existente bit
+	DECLARE @servicio_existente bit
 	DECLARE db_cursor CURSOR FOR
 
 	SELECT ID_TIPO_SERVICIO FROM TIPO_SERVICIO WHERE NOMBRE=@nombre_tipo_serv
