@@ -4,7 +4,7 @@ CREATE PROCEDURE CrearTicket
 	@tipo_doc_cli char(3),
         @nro_servicio int,
         @cod_tipologia int not null,
-        @cod_estado int not null,
+        @cod_estado int not null
         AS
 	DECLARE @id_tipo_serv int
 	DECLARE @cliente_existente bit
@@ -18,7 +18,7 @@ CREATE PROCEDURE CrearTicket
 	BEGIN
 		EXEC @cliente_existente=validarClienteExistente @nro_doc_cli=@nro_doc_cli, @tipo_doc_cli=@tipo_doc_cli
 		EXEC @servicio_existente=validarServicioExistente @nro_servicio=@nro_servicio
-		EXEC @tipologia_valida=validarTipologiaHabilitadaParaServicio @cod_tipologia=@cod_tipologia, @id_tipo_servicio=@id_tipo_servicio
+		EXEC @tipologia_valida=validarTipologiaHabilitadaParaServicio @cod_tipologia=@cod_tipologia, @id_tipo_servicio=@id_tipo_serv
 
 		IF @cliente_existente=0
 		BEGIN
@@ -69,7 +69,7 @@ CREATE PROCEDURE CrearTicket
 CREATE PROCEDURE ModificarTicket 
 	@nro_ticket int,
         @cod_tipologia int not null,
-        @cod_estado int not null,
+        @cod_estado int not null
         AS
 	DECLARE @id_tipo_serv int
 	DECLARE @ticket_existente bit
