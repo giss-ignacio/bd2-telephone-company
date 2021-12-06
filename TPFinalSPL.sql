@@ -3,8 +3,8 @@ CREATE PROCEDURE CrearTicket
 	@nro_doc_cli int,
 	@tipo_doc_cli char(3),
         @nro_servicio int,
-        @cod_tipologia int not null,
-        @cod_estado int not null
+        @cod_tipologia int,
+        @cod_estado int
         AS
 	DECLARE @id_tipo_serv int
 	DECLARE @cliente_existente bit
@@ -56,8 +56,8 @@ CREATE PROCEDURE CrearTicket
 			BEGIN CATCH
 				IF (@@TRANCOUNT > 0)
 					ROLLBACK TRANSACTION
-				PRINT 'No se pudo crear el ticket'
-				THROW
+				PRINT 'No se pudo crear el ticket';
+				THROW;
 			END CATCH
 		END
 	END
@@ -68,8 +68,8 @@ CREATE PROCEDURE CrearTicket
 
 CREATE PROCEDURE ModificarTicket 
 	@nro_ticket int,
-        @cod_tipologia int not null,
-        @cod_estado int not null
+        @cod_tipologia int,
+        @cod_estado int
         AS
 	DECLARE @id_tipo_serv int
 	DECLARE @ticket_existente bit
@@ -114,8 +114,8 @@ CREATE PROCEDURE ModificarTicket
 			BEGIN CATCH
 				IF (@@TRANCOUNT > 0)
 					ROLLBACK TRANSACTION
-				PRINT 'No se pudo modificar el ticket'
-				THROW
+				PRINT 'No se pudo modificar el ticket';
+				THROW;
 			END CATCH
 		END
 	END
@@ -164,8 +164,8 @@ CREATE PROCEDURE CrearServicio
 			BEGIN CATCH
 				IF (@@TRANCOUNT > 0)
 					ROLLBACK TRANSACTION
-				PRINT 'No se pudo crear el servicio'
-				THROW
+				PRINT 'No se pudo crear el servicio';
+				THROW;
 			END CATCH
 		END
 	END
@@ -223,8 +223,8 @@ CREATE PROCEDURE ModificarServicio
 			BEGIN CATCH
 				IF (@@TRANCOUNT > 0)
 					ROLLBACK TRANSACTION
-				PRINT 'No se pudo modificar el servicio'
-				THROW
+				PRINT 'No se pudo modificar el servicio';
+				THROW;
 			END CATCH
 		END
 	END
