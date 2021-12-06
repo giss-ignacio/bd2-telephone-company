@@ -76,12 +76,12 @@ CREATE PROCEDURE ModificarTicket
 	DECLARE @tipologia_valida bit
 	DECLARE db_cursor CURSOR FOR
 
-	SELECT ID_TIPO_SERVICIO FROM SERVICIOS WHERE NRO_SERVICIO=@nro_servicio
+	SELECT S.ID_TIPO_SERVICIO FROM SERVICIOS S INNER JOIN TICKET T ON S.NRO_SERVICIO=T.NRO_SERVICIO WHERE NRO_TICKET=@nro_ticket
 	open db_cursor
 	FETCH NEXT FROM db_cursor into @id_tipo_serv
 	BEGIN
 		EXEC @ticket_existente=validarTicketExistente @nro_ticket=@nro_ticket
-		EXEC @tipologia_valida=validarTipologiaHabilitadaParaServicio @cod_tipologia=@cod_tipologia, @id_tipo_servicio=@id_tipo_servicio
+		EXEC @tipologia_valida=validarTipologiaHabilitadaParaServicio @cod_tipologia=@cod_tipologia, @id_tipo_servicio=@id_tipo_serv
 
 		IF @ticket_existente=0
 		BEGIN
@@ -214,7 +214,7 @@ CREATE PROCEDURE ModificarServicio
 			BEGIN TRANSACTION
 				UPDATE [dbo].[SERVICIOS] 
 				SET ID_DIRECCION=COALESCE(@id_direccion, ID_DIRECCION), TELEFONO=COALESCE(@telefono, TELEFONO), COD_ESTADO_SERV=COALESCE(@cod_estado_serv, COD_ESTADO_SERV), 
-					NRO_DOC_CLI=COALESCE(@nro_doc_cli, NRO_DOC_CLI), TIPO_DOC_CLI=COALESCE(@tipo_doc_cli, TIPO_DOC_CLI), ID_TIPO_SERVICIO=COALESCE(@id_tipo_servicio, ID_TIPO_SERVICIO) 
+					NRO_DOC_CLI=COALESCE(@nro_doc_cli, NRO_DOC_CLI), TIPO_DOC_CLI=COALESCE(@tipo_doc_cli, TIPO_DOC_CLI), ID_TIPO_SERVICIO=COALESCE(@id_tipo_serv, ID_TIPO_SERVICIO) 
 				WHERE [NRO_SERVICIO]=@nro_servicio
 				IF @cod_estado_serv=1
 					UPDATE CLIENTES SET COD_ESTADO_CLI=1 WHERE NRO_DOC=@nro_doc_cli AND TIPO_DOC=@tipo_doc_cli
